@@ -1,4 +1,4 @@
-# CONIO.H
+# Small CONIO for Linux
 
 
 | function       |                                                                               |
