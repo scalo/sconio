@@ -32,4 +32,4 @@ run: $(PATH_BUILD)/$(TARGET)
 	./$(PATH_BUILD)/$(TARGET)
 
 clean:
-	rm -f $(OBJ) $(TARGET) $(PATH_LIB)/libsconio.a
+	rm -f $(OBJ) $(PATH_BUILD)/$(TARGET) $(DEP) $(PATH_LIB)/libsconio.a
