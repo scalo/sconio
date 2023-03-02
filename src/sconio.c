@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-
 /*
 
 
@@ -61,10 +60,12 @@ static char * background[] = {"40","44","42","46","41","45","43","47",
 
 void clrscr(void){
     printf("\033[2J");
+    fflush(stdout); 
 }
 
 void delline (void){
     printf("\033[2K");
+    fflush(stdout); 
 }
 
 void gotoxy(int x, int y){
@@ -109,7 +110,7 @@ static void _wherexy(int *x, int *y){
     tcgetattr(STDIN_FILENO, &saved);
     tcgetattr (STDIN_FILENO, &raw);
     raw.c_lflag &= ~( ICANON | ECHO );
-    raw.c_cc[VMIN] = 1;
+    raw.c_cc[VMIN] = 1; // ???? CONTROLLARE
     raw.c_cc[VTIME] = 0;
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
     write(STDOUT_FILENO, "\033[6n", 4);
@@ -132,36 +133,43 @@ int wherey(void){
 }
 
 
-static char _kbhit(void){
-    char c;
+static char _kbhit(int block){
+    char c = '\0';
     struct termios saved,raw;
-    _check_teminal();
+    //_check_teminal();
     // enable Raw Mode
     tcgetattr(STDIN_FILENO, &saved);
     tcgetattr (STDIN_FILENO, &raw);
+    // raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+    // raw.c_oflag &= ~(OPOST);
+    //  raw.c_cflag |= (CS8);
     raw.c_lflag &= ~( ICANON | ECHO |ISIG );
     raw.c_cc[VMIN] = 0;
     raw.c_cc[VTIME] = 0;
     tcsetattr(STDIN_FILENO, TCSANOW, &raw);
-    c = getchar();
+    // c = getchar();
+    do {
+        read(STDIN_FILENO, &c, 1);
+    } while(!c && block);
     // disable Raw Mode
-    tcsetattr(STDIN_FILENO, TCSANOW, &saved);
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved);
     return c;
 }
 
 int kbhit(void){
     char c;
-    c = _kbhit();
-    if (c != EOF){
+    c = _kbhit(0);
+    if (c != 0){
         ungetc(c, stdin);
-        return 1;
+        return c;
     }
     return 0;
 }
 
 static char _getch(int echo){
     char c;
-    c = _kbhit();
+    fflush(stdout);
+    c = _kbhit(1);
     if(echo)
         printf("%c",c);
     return(c);
@@ -218,7 +226,7 @@ void echo(void){
     _echo(1);
 }
 
-static void __backuprestore(void){
+static void _backuprestore(void){
     static struct termios *saved=NULL;
     if(saved==NULL){
         saved = (void *) malloc(sizeof(struct termios));
@@ -236,9 +244,9 @@ void _initscr(void){
         // _check_teminal
         _check_teminal();
         // save term cfg
-        __backuprestore();
+        _backuprestore();
         // atexit
-        atexit(__backuprestore);
+        atexit(_backuprestore);
         _set_cursortype(_NOCURSOR);
         noecho();
         init=1;

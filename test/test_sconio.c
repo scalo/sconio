@@ -90,6 +90,7 @@ void test_gotoxy(void){
         gotoxy(30+i,10+i);
         printf(" ");
     }
+    putch('\n');
     gotoxy(x,y); // restore position
     TEST_ASSERT(1);
 }
@@ -125,18 +126,19 @@ void test_kbhit1(void){
     printf("Press a key\n");
     while(!kbhit()){}
     printf("Key pressed\n");
-    getch(); //drop char
+    //getch(); //drop char
     TEST_ASSERT(1);
 }
 
 void test_kbhit2(void){
     int i = 0;
-    while(!kbhit()){
+    char c;
+    while(!(c=kbhit())){
         printf("%d Press a key \n",i);
         i++;
     }
-    printf("Key pressed\n");
-    getch(); //drop char
+    printf("Key %c pressed\n",c);
+    //getch(); //drop char
     delay(1000);
     TEST_ASSERT(1);
 }
@@ -145,6 +147,7 @@ void test_getch(){
     char c;
     printf("getch type 'a' char>");
     c = getch();
+    printf(" %c pressed with no  echo\n",c);
     TEST_ASSERT_EQUAL_CHAR('a',c);
 }
 
@@ -153,18 +156,18 @@ void test_getche(){
     char c;
     c = getche();
     printf(" %c pressed with echo\n",c);
-    TEST_ASSERT(c);
+    TEST_ASSERT_EQUAL_CHAR('a',c);
 }
 
 int main(void){
     UNITY_BEGIN();
     RUN_TEST(test_kbhit2);
     RUN_TEST(test_gettextinfo);
-    RUN_TEST(test_clrscr);
-    RUN_TEST(test_delay1);
     RUN_TEST(test_delay2);
+    RUN_TEST(test_clrscr);
     RUN_TEST(test_gotoxy);
     RUN_TEST(test_textcolor);
+    RUN_TEST(test_delay1);
     RUN_TEST(test_textbackground);
     RUN_TEST(test_kbhit1);
     RUN_TEST(test_getch);
