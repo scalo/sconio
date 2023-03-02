@@ -8,6 +8,20 @@
 #include <stdint.h>
 #include <unistd.h>
 
+/* CURSOR CODES */
+
+// #define KEY_UP  6977
+// #define KEY_DOWN  6978
+// #define KEY_RIGHT 6979
+// #define KEY_LEFT  6980
+
+enum KEYCURSOR {
+    KEY_UP = 6977,
+    KEY_DOWN = 6978,
+    KEY_RIGHT = 6979,
+    KEY_LEFT  = 6980
+};
+
 enum COLORS {
     BLACK=0,
     BLUE=1,

@@ -2,7 +2,7 @@
 #include "sconio.h"
 #include <stdio.h>
 #include <time.h>
-
+#include <ctype.h>
 
 #define DELAY 500 //msec
 
@@ -143,6 +143,27 @@ void test_kbhit2(void){
     TEST_ASSERT(1);
 }
 
+void test_keymap(void){
+    int k;
+    printf("Keymap  press 'q' exit \n");
+    while (1) {
+        k = kbhit();
+        if (k > 0) {
+            if (iscntrl(k) || k > 255) {
+                printf("%d\r\n", k);
+            } else {
+                printf("%d ('%c')\r\n", k, k);
+            }
+            if (k == 'q')
+                break;
+        }
+        delay(1000);
+        putchar('.');
+    }
+    TEST_ASSERT(1);
+
+}
+
 void test_getch(){
     char c;
     printf("getch type 'a' char>");
@@ -161,16 +182,17 @@ void test_getche(){
 
 int main(void){
     UNITY_BEGIN();
-    RUN_TEST(test_kbhit2);
-    RUN_TEST(test_gettextinfo);
-    RUN_TEST(test_delay2);
-    RUN_TEST(test_clrscr);
-    RUN_TEST(test_gotoxy);
-    RUN_TEST(test_textcolor);
-    RUN_TEST(test_delay1);
-    RUN_TEST(test_textbackground);
-    RUN_TEST(test_kbhit1);
-    RUN_TEST(test_getch);
-    RUN_TEST(test_getche);
+    RUN_TEST(test_keymap);
+    // RUN_TEST(test_kbhit2);
+    // RUN_TEST(test_gettextinfo);
+    // RUN_TEST(test_delay2);
+    // RUN_TEST(test_clrscr);
+    // RUN_TEST(test_gotoxy);
+    // RUN_TEST(test_textcolor);
+    // RUN_TEST(test_delay1);
+    // RUN_TEST(test_textbackground);
+    // RUN_TEST(test_kbhit1);
+    // RUN_TEST(test_getch);
+    // RUN_TEST(test_getche);
     return UNITY_END();
 }

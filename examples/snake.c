@@ -8,7 +8,7 @@
 
 // Therefore the program is split in two pieces, a system-independent
 // game logic, and a system-dependent UI, separated by a tiny API:
-char nonblocking_getch();
+int nonblocking_getch();
 void positional_putch(int x, int y, char ch);
 void millisecond_sleep(int n);
 void init_screen();
@@ -23,9 +23,10 @@ void close_screen();
 int w, h;
 int* board;
 
-char nonblocking_getch() {
-  return (char)kbhit();
+int  nonblocking_getch() {
+  return kbhit();
 }
+
 void millisecond_sleep(int n) { delay(n); }
 void update_screen() { fflush(stdout); }
 void init_screen() {
@@ -134,16 +135,20 @@ int main() {
   do {
     show();
     switch (nonblocking_getch()) {
-      case 'q':
+      case 'q' :
+      case  KEY_UP :
         dir = N;
         break;
-      case 'o':
+      case 'o' :
+      case KEY_LEFT:
         dir = W;
         break;
-      case 'a':
+      case 'a' :
+      case KEY_DOWN:
         dir = S;
         break;
-      case 'p':
+      case 'p' :
+      case KEY_RIGHT:
         dir = E;
         break;
       case 'x':

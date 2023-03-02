@@ -133,9 +133,11 @@ int wherey(void){
 }
 
 
-static char _kbhit(int block){
-    char c = '\0';
+static int _kbhit(int block){
+    char c = '\0',d,e;
+    int k = 0;
     struct termios saved,raw;
+    fflush(stdout);
     //_check_teminal();
     // enable Raw Mode
     tcgetattr(STDIN_FILENO, &saved);
@@ -150,25 +152,34 @@ static char _kbhit(int block){
     // c = getchar();
     do {
         read(STDIN_FILENO, &c, 1);
+        if (c == 27) {
+            read(STDIN_FILENO, &d, 1);
+            read(STDIN_FILENO, &e, 1);
+            //printf("%d %d %d\r\n", c, d, e);
+            if (d == 91 && e >= 65 && e <= 68) {
+                k = e + (c << 8);
+            }
+        } else {
+            k = (int)c;
+        }
     } while(!c && block);
     // disable Raw Mode
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved);
-    return c;
+    return k;
 }
 
 int kbhit(void){
-    char c;
-    c = _kbhit(0);
-    if (c != 0){
-        ungetc(c, stdin);
-        return c;
+    int k;
+    k = _kbhit(0);
+    if (k != 0){
+        // ungetc(c, stdin);
+        return k;
     }
     return 0;
 }
 
 static char _getch(int echo){
     char c;
-    fflush(stdout);
     c = _kbhit(1);
     if(echo)
         printf("%c",c);
