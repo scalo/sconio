@@ -110,14 +110,14 @@ static void _wherexy(int *x, int *y){
     tcgetattr(STDIN_FILENO, &saved);
     tcgetattr (STDIN_FILENO, &raw);
     raw.c_lflag &= ~( ICANON | ECHO );
-    raw.c_cc[VMIN] = 1; // ???? CONTROLLARE
+    raw.c_cc[VMIN] = 1; // ???? CONTROLLARE NECESSARIO
     raw.c_cc[VTIME] = 0;
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+    tcsetattr(STDIN_FILENO, TCSANOW, &raw);
     write(STDOUT_FILENO, "\033[6n", 4);
     read(STDIN_FILENO, buf, 8);
     sscanf(buf,"\033[%d;%dR",y,x);
     // disable Raw Mode
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved);
+    tcsetattr(STDIN_FILENO, TCSANOW, &saved);
 }
 
 int wherex(void){
@@ -146,11 +146,10 @@ static int _kbhit(int block){
     // raw.c_oflag &= ~(OPOST);
     //  raw.c_cflag |= (CS8);
     raw.c_lflag &= ~( ICANON | ECHO |ISIG );
-    raw.c_cc[VMIN] = 0;
+    raw.c_cc[VMIN] = (block>0);
     raw.c_cc[VTIME] = 0;
     tcsetattr(STDIN_FILENO, TCSANOW, &raw);
-    // c = getchar();
-    do {
+    //do {
         read(STDIN_FILENO, &c, 1);
         if (c == 27) {
             read(STDIN_FILENO, &d, 1);
@@ -162,9 +161,9 @@ static int _kbhit(int block){
         } else {
             k = (int)c;
         }
-    } while(!c && block);
+    //} while(!c && block);
     // disable Raw Mode
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved);
+    tcsetattr(STDIN_FILENO, TCSANOW, &saved);
     return k;
 }
 
@@ -172,7 +171,8 @@ int kbhit(void){
     int k;
     k = _kbhit(0);
     if (k != 0){
-        // ungetc(c, stdin);
+        ungetc(k, stdin);
+        //write(STDIN_FILENO,&k,1);
         return k;
     }
     return 0;
@@ -226,7 +226,7 @@ void _echo(int onoff){
         term.c_lflag |= ECHO ;
     else
         term.c_lflag &= ~( ECHO );
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &term);
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
 }
 
 void noecho(void){

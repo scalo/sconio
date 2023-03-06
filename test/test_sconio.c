@@ -180,19 +180,32 @@ void test_getche(){
     TEST_ASSERT_EQUAL_CHAR('a',c);
 }
 
+void test_kbget(void){
+    int c,i;
+    while(!kbhit()){
+        printf("%d Press a key \n",i);
+        i++;
+    }
+    c = getch();
+    printf("Key %c pressed\n",c);
+    delay(1000);
+    TEST_ASSERT(1);
+}
+
 int main(void){
     UNITY_BEGIN();
+    // RUN_TEST(test_kbget);
     RUN_TEST(test_keymap);
-    // RUN_TEST(test_kbhit2);
-    // RUN_TEST(test_gettextinfo);
-    // RUN_TEST(test_delay2);
-    // RUN_TEST(test_clrscr);
-    // RUN_TEST(test_gotoxy);
-    // RUN_TEST(test_textcolor);
-    // RUN_TEST(test_delay1);
-    // RUN_TEST(test_textbackground);
-    // RUN_TEST(test_kbhit1);
-    // RUN_TEST(test_getch);
-    // RUN_TEST(test_getche);
+    RUN_TEST(test_kbhit2);
+    RUN_TEST(test_gettextinfo);
+    RUN_TEST(test_delay2);
+    RUN_TEST(test_clrscr);
+    RUN_TEST(test_gotoxy);
+    RUN_TEST(test_textcolor);
+    RUN_TEST(test_delay1);
+    RUN_TEST(test_textbackground);
+    RUN_TEST(test_kbhit1);
+    RUN_TEST(test_getch);
+    RUN_TEST(test_getche);
     return UNITY_END();
 }
