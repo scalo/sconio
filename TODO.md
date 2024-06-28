@@ -1,5 +1,7 @@
 # TODO
 
+- [ ] snake v2
+- [ ] replace unity whin minunit
 - [~] improve makefile
 - [x] make lib
 - [x] keypress echo issue

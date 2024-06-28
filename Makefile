@@ -10,7 +10,9 @@ SRC	= 	$(wildcard $(PATH_SRC)/*.c) \
 
 OBJ = $(SRC:.c=.o)
 
-TARGET = test_sconio
+TARGET = libsconio.a
+
+TEST = test_sconio
 
 DEP = $(OBJ:.o=.d)
 
@@ -19,17 +21,20 @@ CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror
 
 LDFLAGS = -lc
 
-
-$(PATH_BUILD)/$(TARGET): $(OBJ) 
+$(PATH_BUILD)/$(TEST): $(OBJ) 
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-.PHONY:	clean run lib
+.PHONY:	clean test run
 
-lib:
+all: $(TARGET)
+
+$(PATH_LIB)/libsconio.a:  $(OBJ)
 	$(AR) -rcs $(PATH_LIB)/libsconio.a $(PATH_SRC)/sconio.o
 
-run: $(PATH_BUILD)/$(TARGET)
-	./$(PATH_BUILD)/$(TARGET)
+test: $(PATH_BUILD)/$(TEST)
+
+run: test
+	$(PATH_BUILD)/$(TEST)
 
 clean:
-	rm -f $(OBJ) $(PATH_BUILD)/$(TARGET) $(DEP) $(PATH_LIB)/libsconio.a
+	rm -f $(OBJ) $(PATH_BUILD)/$(TARGET) $(PATH_BUILD)/$(TEST) $(DEP) $(PATH_LIB)/libsconio.a

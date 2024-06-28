@@ -35,11 +35,13 @@ void init_screen() {
 	h = info.screenheigh;
 	board = malloc(w * h * sizeof(int));
 	_initscr();
-	_set_cursortype(_NORMALCURSOR);
+	_set_cursortype(_NOCURSOR);
     //noecho();
 	clrscr();
  }
-void close_screen() { }
+void close_screen() { 
+	_set_cursortype(_NORMALCURSOR);
+}
 void positional_putch(int x, int y, char ch){
 	gotoxy(x,y);
 	putch(ch);
