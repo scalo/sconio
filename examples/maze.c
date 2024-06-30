@@ -1,23 +1,30 @@
-/**********************
+/***********************
  *         MAZE        *
- ***********************/
+ ***********************
+
+ TODO
+  [] bug fill space
+  [] bug big terminal
+ 
+ */
 
 #include <sconio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-int w, h;
-int* board;
+#define DELAY 0
 
-enum State { SPACE = 40, BORDER = 1 };
+int w, h;
+unsigned char * board;
+
+enum State { SPACE = ' ', WALL = 'X' };
 
 void init_screen() {
   struct text_info info;
   gettextinfo(&info);
   w = info.screenwidth - (info.screenwidth % 2);
   h = info.screenheigh - (info.screenwidth % 2);
-  board = malloc(w * h * sizeof(int));
+  board = malloc(w * h * sizeof(unsigned char));
   _initscr();
   _set_cursortype(_NOCURSOR);
   clrscr();
@@ -25,7 +32,7 @@ void init_screen() {
   textbackground(WHITE);
   for (int y = 0; y < h; ++y) {
     for (int x = 0; x < w; x++) {
-      board[x + (h - 1) * w] = BORDER;
+      board[x + y * w] = WALL;
       gotoxy(x, y);
       putch(' ');
     }
@@ -33,92 +40,125 @@ void init_screen() {
   textbackground(BLACK);
 }
 
-int edge(int x, int y) {
+int dig(int x, int y) {
   if (x < 1 || x > w - 1 || y < 1 || y > h - 1) return 0;
-  if (board[(y - 1) * w + x - 1] == BORDER) return 0;
-  if (board[(y - 1) * w + x] == BORDER) return 0;
-  if (board[(y - 1) * w + x + 1] == BORDER) return 0;
-  if (board[(y)*w + x - 1] == BORDER) return 0;
-  if (board[(y)*w + x] == BORDER) return 0;
-  if (board[(y)*w + x + 1] == BORDER) return 0;
-  if (board[(y - 1) * w + x - 1] == BORDER) return 0;
-  if (board[(y + 1) * w + x] == BORDER) return 0;
-  if (board[(y + 1) * w + x + 1] == BORDER) return 0;
+  if (board[(y - 1) * w + x - 1] != WALL) return 0;
+  if (board[(y - 1) * w + x] != WALL) return 0;
+  if (board[(y - 1) * w + x + 1] != WALL) return 0;
+  if (board[y*w + x - 1] != WALL) return 0;
+  if (board[y*w + x] != WALL) return 0;
+  if (board[y*w + x + 1] != WALL) return 0;
+  if (board[(y + 1) * w + x - 1] != WALL) return 0;
+  if (board[(y + 1) * w + x] != WALL) return 0;
+  if (board[(y + 1) * w + x + 1] != WALL) return 0;
+  return 1;
+}
+
+int mango(int x, int y , char c){
+  board[y * w + x ] = c;
+  gotoxy(x, y);
+  putch(c);
   return 1;
 }
 
 void maze() {
-  int x = 2, y = 2, d, end = 0, dig=0, goback=0, count;
-  gotoxy(x, y);
-  putch('@');
+  int x = 2, y = 2, d, end = 0, hole, goback, count;
+  mango(x, y , '@');
   while (!end) {
     /*
-        1->E A
-        2->S B
-        3->W C
-        4->N D
+          D
+          ^
+       C<-+->A goback
+          v
+          B
 
         XX123
-        X 405
+        X*4?5  edge
         XX678
     */
     d = rand() % 4 + 1;
-    count = 0;
-    //printf("%d ",d);
-    while (dig && !goback) {
-      switch (d) {
+    hole = 0;
+    goback = 0;
+    //cprintf("d=%d ", d);
+    count = d;
+    while (!hole && !goback) {
+      //cprintf("count=%d ", count);
+      switch (count) {
         case 1:
-          if (edge(x + 2, y)) {
-            gotoxy(x+1,y);
-            putch(' ');
-            x += 2;
-            board[y * w + x ]='A';
-            dig=1;
+          if (dig(x + 2, y)) {
+            mango(x+1,y,' ');
+            hole = mango(x+2,y,'A');
+            x = x + 2;
           }
           break;
         case 2:
-          if (edge(x, y + 2)) {
-            gotoxy(x,y+1);
-            putch(' ');
-            board[y * w + x ]='B';
-            y += 2;
-            dig=1;
+          if (dig(x, y + 2)) {
+            mango(x,y+1,' ');
+            hole = mango(x,y+2,'B');
+            y = y + 2;
           }
           break;
         case 3:
-          if (edge(x - 2, y)) {
-            gotoxy(x-1,y);
-            putch(' ');
-            board[y * w + x ]='C';
-            x -= 2;
-            dig=1;
+          if (dig(x - 2, y)) {
+            mango(x-1,y,' ');
+            hole = mango(x-2,y,'C');
+            x = x - 2;
           }
           break;
         case 4:
-          if (edge(x, y - 2)) {
-            gotoxy(x,y-1);
-            putch(' ');
-            y -= 2;
-            board[y * w + x ]='D';
-            dig=1;
+          if (dig(x, y - 2)) {
+            mango(x,y-1,' ');
+            hole = mango(x,y-2,'D');
+            y = y - 2;
           }
           break;
       }
-      count = (count+1) % d;
-      // check goback
-      if(!dig && count==0){
-        goback=1;
+      count = (count + 1) % 4 + 1;
+      if (!hole && count == d) {
+        goback = 1;
       }
-      delay(10000);
+      delay(DELAY);
+    }
+    if (goback == 1) {
+      switch(board[x+y*w]){
+        case 'A':
+          mango(x,y,' ');
+          x = x -2 ;
+          break;
+        case 'B':
+          mango(x,y,' ');
+          y = y -2 ;
+          break;
+        case 'C':
+          mango(x,y,' ');
+          x = x + 2 ;
+          break;
+        case 'D':
+          mango(x,y,' ');
+          y = y + 2 ;
+          break;
+        case '@':
+          end = 1;
+          break;
+        default:
+          cputs("ERRORE goback \n");
+          exit(1);
+      }
     }
   }
 }
 
-int main() {
-  init_screen();
-  maze();
+void keypress(){
   while (!kbhit()) {
   };
-  puts("");
+}
+
+int main() {
+  cputs("MAZE\n");
+  delay(500);
+  init_screen();
+  maze();
+  keypress();
+  clrscr();
   return 0;
 }
