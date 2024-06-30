@@ -1,12 +1,6 @@
 /***********************
  *         MAZE        *
- ***********************
-
- TODO
-  [] bug fill space
-  [] bug big terminal
- 
- */
+ ***********************/
 
 #include <sconio.h>
 #include <stdlib.h>
@@ -16,6 +10,7 @@
 
 int w, h;
 unsigned char * board;
+int delay_ms = DELAY;
 
 enum State { SPACE = ' ', WALL = 'X' };
 
@@ -33,7 +28,7 @@ void init_screen() {
   for (int y = 0; y < h; ++y) {
     for (int x = 0; x < w; x++) {
       board[x + y * w] = WALL;
-      gotoxy(x, y);
+      gotoxy(x+1, y+1);
       putch(' ');
     }
   }
@@ -41,7 +36,8 @@ void init_screen() {
 }
 
 int dig(int x, int y) {
-  if (x < 1 || x > w - 1 || y < 1 || y > h - 1) return 0;
+  x--;y--;
+  if (x < 1 || x > w - 2 || y < 1 || y > h - 2) return 0;
   if (board[(y - 1) * w + x - 1] != WALL) return 0;
   if (board[(y - 1) * w + x] != WALL) return 0;
   if (board[(y - 1) * w + x + 1] != WALL) return 0;
@@ -55,7 +51,7 @@ int dig(int x, int y) {
 }
 
 int mango(int x, int y , char c){
-  board[y * w + x ] = c;
+  board[(y-1) * w + (x-1) ] = c;
   gotoxy(x, y);
   putch(c);
   return 1;
@@ -117,10 +113,9 @@ void maze() {
       if (!hole && count == d) {
         goback = 1;
       }
-      delay(DELAY);
     }
     if (goback == 1) {
-      switch(board[x+y*w]){
+      switch(board[x-1+(y-1)*w]){
         case 'A':
           mango(x,y,' ');
           x = x -2 ;
@@ -145,20 +140,25 @@ void maze() {
           exit(1);
       }
     }
+    delay(delay_ms);
   }
 }
 
-void keypress(){
+void wait(){
   while (!kbhit()) {
   };
 }
 
-int main() {
-  cputs("MAZE\n");
-  delay(500);
+int main(int argc, char** argv) {
+  if (argc>1){
+    int ms = atoi(argv[1]);
+    delay_ms = ms;
+  }
+  // cputs("MAZE\n");
+  // delay(500);
   init_screen();
   maze();
-  keypress();
+  wait();
   clrscr();
   return 0;
 }
