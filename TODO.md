@@ -15,3 +15,12 @@
 - [ ] origin (0,0) optional
 - [x] snake example
 - [ ] cursor keys non blocking
+
+## MAZE
+
+  [] full random tunnel choice
+  [] bug wait
+  [] refactor/optimization
+  [x] bug bordi
+  [x] bug big terminal
+  [x] bug fill space
