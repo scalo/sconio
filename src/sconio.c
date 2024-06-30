@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdarg.h>
 
 /*
 
@@ -199,7 +200,21 @@ void putch(char ch){
     fflush(stdout);
 }
 
+void cputs(char* str){
+    fputs(str,stdout);
+    fflush(stdout);
+}
+
+void cprintf(const char *format, ...){
+    va_list vargs;
+    va_start (vargs, format);
+    vfprintf(stdout,format, vargs);
+    va_end (vargs);
+    fflush(stdout);
+}
+
 void delay(int ms){
+    if (ms==0) return;
     int secs,millis;
     secs=ms/1000;
     millis=ms%1000;

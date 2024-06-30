@@ -17,6 +17,8 @@
 | delay          | sleep for ms milliseconds                                                     |
 | gettextinfo    | returns information of the screen                                             |
 | putch          | print a character on the screen                                               |
+| cputs          | print a string on the screen                                                  |
+| cprintf        | fprint like on screen                                                         |
 
 
 ---
@@ -25,14 +27,12 @@
 | ------- | ------------------------------------------------ |
 | window  | defines the active text mode window              |
 | ungetch | Pushes a character back into the keyboard buffer |
-| cputs   | returns a string to the screen                   |
 
 ---
 
 | DUMMY      |                                              |
 | ---------- | -------------------------------------------- |
 | textmode   | msdos only  (check terminal ?)               |
-| cprintf  ? | prints formatted output to the screen        |
 | cscanf   ? | reads input from the console and reformat it |
 | cgets    ? | Reads a string from the console              |
 

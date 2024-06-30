@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <unistd.h>
+#include <stdarg.h>
 
 /* CURSOR CODES */
 
@@ -151,6 +152,16 @@ void _initscr(void);
 Print a character on the screen
 */
 void putch(char ch);
+
+/*
+Print a string on the screen , no cr
+*/
+void cputs(char* str);
+
+/*
+Printf like console
+*/
+void cprintf(const char *format, ...);
 
 /*
 void __nocursor(void);
