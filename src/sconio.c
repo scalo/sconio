@@ -76,10 +76,12 @@ void gotoxy(int x, int y){
 
 void textcolor(int color){
     printf("\033[%sm",foreground[color]);
+    fflush(stdout); 
 }
 
 void textbackground(int color){
     printf("\033[%sm",background[color]);
+    fflush(stdout); 
 }
 
 void _resetcolor(){
@@ -92,6 +94,7 @@ void _set_cursortype(int type){
         printf("\033[?25l");
     else
         printf("\033[?25h");
+    fflush(stdout); 
 }
 
 

@@ -18,8 +18,8 @@
 
 ## MAZE
 
-  [] full random tunnel choice
-  [] bug wait
+  [x] full random tunnel choice
+  [~] bug wait / workaround
   [] refactor/optimization
   [x] bug bordi
   [x] bug big terminal

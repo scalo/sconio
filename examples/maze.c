@@ -12,24 +12,24 @@ int w, h;
 unsigned char* board;
 int delay_ms = DELAY;
 
-enum State { SPACE = ' ', WALL = 'X' };
+enum State { SPACE = ' ', WALL = 'O' };
 
 void init_screen() {
   struct text_info info;
   gettextinfo(&info);
-  w = info.screenwidth - (info.screenwidth % 3);
-  h = info.screenheigh - (info.screenheigh % 3);
+  w = info.screenwidth - (info.screenwidth % 2);
+  h = info.screenheigh - (info.screenheigh % 2);
   board = malloc(w * h * sizeof(unsigned char));
   _initscr();
-  _set_cursortype(_NOCURSOR);
-  clrscr();
+  //_set_cursortype(_NOCURSOR);
   srand(time(0));
   textbackground(WHITE);
+  clrscr();
   for (int y = 0; y < h; ++y) {
     for (int x = 0; x < w; x++) {
       board[x + y * w] = WALL;
-      gotoxy(x + 1, y + 1);
-      putch(' ');
+      //gotoxy(x + 1, y + 1);
+      //putch(' ');
     }
   }
   textbackground(BLACK);
@@ -58,7 +58,7 @@ void put(int x, int y, char c) {
 }
 
 void maze() {
-  int x = 2, y = 2, d, end = 0, hole, goback, count;
+  int x = 2, y = 2, dir, sig, end = 0, hole, goback, count;
   put(x, y, '@');
   while (!end) {
     /*
@@ -72,12 +72,14 @@ void maze() {
         X*4?5  edge
         XX678
     */
-    d = rand() % 4 + 1;
+    dir = rand() % 4 + 1;
+    sig = rand() % 2 * 2  - 1;
+    //cprintf("%d ",s);
     hole = 0;
     goback = 0;
     count = 0;
     while (!hole && !goback) {
-      switch ((d+count)%4+1) {
+      switch ((dir+count*sig+4)%4+1) {
         case 1:
           if (dig(x + 2, y)) {
             put(x + 1, y, ' ');
@@ -111,7 +113,7 @@ void maze() {
           }
           break;
       }
-      count ++;
+      count = count + 1;
       if (!hole && count == 4) {
         goback = 1;
       }
@@ -147,6 +149,7 @@ void maze() {
 }
 
 void wait() {
+  kbhit(); // workaround
   while (!kbhit()) {
   };
 }
