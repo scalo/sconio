@@ -28,7 +28,7 @@ $(PATH_BUILD)/$(TEST): $(OBJ)
 
 all: $(TARGET)
 
-$(PATH_LIB)/libsconio.a:  $(OBJ)
+libsconio.a:  $(OBJ)
 	$(AR) -rcs $(PATH_LIB)/libsconio.a $(PATH_SRC)/sconio.o
 
 test: $(PATH_BUILD)/$(TEST)

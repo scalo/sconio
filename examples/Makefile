@@ -1,7 +1,7 @@
-SRC = snake.c
+SRC = maze.c
 OBJ = $(SRC:.c=.o)
 PATH_BUILD = ../build
-TARGET = snake
+TARGET = maze
 
 CFLAGS = -I. -I../src
 CFLAGS += -std=c99 -pedantic -Wall -Wextra -Werror
